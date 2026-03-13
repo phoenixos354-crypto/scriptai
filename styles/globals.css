@@ -1,0 +1,21 @@
+/* styles/globals.css */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #18181f;
+  --border: #2a2a38;
+  --accent: #ff3c6e;
+  --accent2: #ff8c42;
+  --accent3: #4ef0b4;
+  --text: #f0f0f5;
+  --muted: #6b6b82;
+  --card: #13131c;
+}
+
+html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
