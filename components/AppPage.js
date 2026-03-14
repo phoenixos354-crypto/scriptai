@@ -53,41 +53,89 @@ const PROVIDERS = {
 function get(key, fb) { try { return localStorage.getItem(key) || fb } catch { return fb } }
 
 function buildPrompt({ nama, fitur, gaVid, gaBhs, rumus, aiVid, aiBhs, aiRumus }) {
-  const gv = aiVid ? 'PILIHKAN gaya video yang paling cocok dan berpotensi viral' : (gaVid || 'fleksibel')
-  const gb = aiBhs ? 'PILIHKAN gaya bahasa yang paling engaging dan viral' : (gaBhs || 'persuasif dan santai')
-  const rs = aiRumus ? 'PILIHKAN rumus script yang paling convert' : (rumus || 'Hook → Problem → Solusi → CTA')
-  const note = (aiVid||aiBhs||aiRumus) ? '\n\nCATATAN: Untuk pilihan "PILIHKAN", AI tentukan sendiri yang terbaik. Sebutkan di baris pertama tiap script: [Gaya: X | Bahasa: Y | Rumus: Z]' : ''
-  return `Kamu adalah copywriter video affiliate Shopee terbaik Indonesia yang ahli membuat konten viral.
+  const gv = aiVid ? 'PILIHKAN gaya video yang paling cocok dan berpotensi viral untuk produk ini' : (gaVid || 'fleksibel')
+  const gb = aiBhs ? 'PILIHKAN gaya bahasa yang paling engaging dan viral untuk produk ini' : (gaBhs || 'persuasif dan santai')
+
+  const daftarRumus = `Hook (Masalah) → Penjelasan → Solusi → CTA
+Hook → Cerita → Hasil → CTA
+Hook → Demo Produk → Benefit → CTA
+Hook → Kesalahan Umum → Solusi Produk → CTA
+Hook → Before → After → CTA
+Hook → Fakta Mengejutkan → Edukasi → CTA
+Hook → Review Jujur → Benefit → CTA
+Hook → Tutorial Cepat → Produk → CTA
+Hook → Reaction Pertama Mencoba → Benefit → CTA
+Hook → Problem → Testimoni → CTA
+Hook → Kelebihan → Kekurangan → Kesimpulan → CTA
+Hook → Alasan 1 → Alasan 2 → Alasan 3 → CTA
+Hook → Produk A → Produk B → Kesimpulan → CTA
+Hook → Tips → Demo → CTA
+Hook → Buka Produk → Reaksi → CTA
+Hook → Pertanyaan → Jawaban → Produk → CTA
+Hook → Mitos → Fakta → Produk → CTA
+Hook → Pengalaman Pribadi → Transformasi → CTA
+Hook → Statistik / Data → Solusi → CTA
+Hook → Ekspektasi → Realita → Kejutan → CTA
+Hook → Pain Point → Empati → Solusi → CTA`
+
+  const rsInstruction = aiRumus
+    ? `PILIHKAN satu rumus dari daftar berikut yang paling cocok dan berpotensi viral untuk produk ini:
+${daftarRumus}
+Setelah memilih, gunakan label dari rumus tersebut untuk setiap bagian script.`
+    : `Gunakan rumus: ${rumus || 'Hook → Penjelasan → Solusi → CTA'}
+Gunakan label dari rumus tersebut untuk setiap bagian script.`
+
+  const aiPickNote = (aiVid || aiBhs || aiRumus)
+    ? `\n\nINFO AI PICK: Untuk setiap script, tulis 1 baris info di paling atas sebelum script dimulai:
+» Gaya Video: [nama gaya] | Gaya Bahasa: [nama gaya] | Rumus: [rumus yang dipilih]`
+    : ''
+
+  return `Kamu adalah copywriter video affiliate Shopee terbaik Indonesia yang ahli membuat konten viral di TikTok dan Shopee Video.
 
 Produk: ${nama}
 ${fitur ? 'Detail produk:\n' + fitur : ''}
 
-Buat TEPAT 5 script voice over video affiliate yang berbeda-beda:
+Buat TEPAT 5 script voice over video affiliate:
 - Gaya video: ${gv}
 - Gaya bahasa: ${gb}
-- Rumus script: ${rs}
-- Durasi: ±15 detik (40–60 kata per script)
-- Bahasa Indonesia natural
-- Setiap script WAJIB diawali Hook kuat (bikin orang berhenti scroll dalam 3 detik)
-- Setiap script WAJIB diakhiri CTA "klik beli sekarang, link di keranjang kuning!"
-${note}
+- ${rsInstruction}
+- Durasi: ±15 detik per script (40–60 kata)
+- Bahasa Indonesia yang natural, tidak kaku
+- Setiap script WAJIB diawali Hook kuat yang bikin orang berhenti scroll dalam 3 detik pertama
+- Setiap script WAJIB diakhiri CTA: "klik beli sekarang, link di keranjang kuning!"
+${aiPickNote}
 
-Format output WAJIB persis:
+ATURAN FORMAT — Setiap bagian script diberi label dalam kurung kotak sesuai rumus yang dipakai.
+Contoh untuk rumus "Hook (Masalah) → Penjelasan → Solusi → CTA":
+[HOOK] Pernah kesel gak sih ngecat rumah tapi catnya encer banget, jadi harus berkali-kali lapis?
+[PENJELASAN] Gila sih, ini pas gue buka kalengnya... langsung kerasa bedanya sama cat biasa.
+[SOLUSI] Ini Avitex Wizz Interior, 40% lebih kental dari cat kebanyakan. Sekali poles langsung nutup sempurna!
+[CTA] Langsung cek keranjang kuning buat buktiin sendiri efisiensinya!
+
+Contoh untuk rumus "Hook → Before → After → CTA":
+[HOOK] Dulu tiap pakai rok selalu deg-degan, takut tembus pandang...
+[BEFORE] Udah coba banyak rok tapi tetep aja tipis dan gak nyaman dipakai seharian.
+[AFTER] Sejak pakai Naomi Kawaii Skirt, tenang banget! Ada furing tebel, bahan premium, gak kaku.
+[CTA] Buktiin sendiri, klik beli sekarang link di keranjang kuning!
+
+Label harus PERSIS mengikuti nama-nama di rumus yang dipilih (dalam huruf kapital, tanpa spasi → gunakan underscore jika perlu, misal ALASAN_1, SOLUSI_PRODUK, dll).
+
+Format output WAJIB:
 
 SCRIPT 1:
-[tulis script]
+[isi label dan teks sesuai rumus]
 
 SCRIPT 2:
-[tulis script]
+[isi label dan teks sesuai rumus]
 
 SCRIPT 3:
-[tulis script]
+[isi label dan teks sesuai rumus]
 
 SCRIPT 4:
-[tulis script]
+[isi label dan teks sesuai rumus]
 
 SCRIPT 5:
-[tulis script]`
+[isi label dan teks sesuai rumus]`
 }
 
 function parseScripts(text) {
@@ -306,14 +354,31 @@ export default function AppPage({ user, onLogout }) {
                       </button>
                     </div>
                     <div style={S.scriptText}>
-                      {sc.split('\n').map((line, li) => (
-                        <span key={li}>
-                          {line.startsWith('[') && line.includes(']')
-                            ? <span style={{color:'#4ef0b4',fontSize:'0.75rem',fontWeight:600}}>{line}</span>
-                            : line}
-                          {li < sc.split('\n').length-1 && <br/>}
-                        </span>
-                      ))}
+                      {sc.split('\n').map((line, li) => {
+                        const labelMatch = line.match(/^(\[[A-Z_0-9]+\])(.*)/)
+                        if (labelMatch) {
+                          const label = labelMatch[1].replace(/[\[\]]/g,'').toLowerCase()
+                          const labelColors = {
+                            hook: { bg:'rgba(255,60,110,0.15)', color:'#ff3c6e', border:'rgba(255,60,110,0.3)' },
+                            cta:  { bg:'rgba(255,140,66,0.15)', color:'#ff8c42', border:'rgba(255,140,66,0.3)' },
+                          }
+                          const def = { bg:'rgba(78,240,180,0.1)', color:'#4ef0b4', border:'rgba(78,240,180,0.25)' }
+                          const c = labelColors[label] || def
+                          return (
+                            <div key={li} style={{marginBottom:'8px', borderRadius:'8px', overflow:'hidden', border:`1px solid ${c.border}`}}>
+                              <span style={{display:'inline-block', background:c.bg, color:c.color, fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.08em', padding:'2px 8px', borderRight:`1px solid ${c.border}`}}>
+                                {labelMatch[1]}
+                              </span>
+                              <span style={{padding:'4px 10px', display:'inline', fontSize:'0.88rem', color:'#d0d0e0', lineHeight:1.6}}>
+                                {labelMatch[2].trim()}
+                              </span>
+                            </div>
+                          )
+                        }
+                        return line.trim() ? (
+                          <div key={li} style={{fontSize:'0.88rem', color:'#8a8a9a', marginBottom:'4px', fontStyle:'italic'}}>{line}</div>
+                        ) : null
+                      })}
                     </div>
                   </div>
                 ))}
